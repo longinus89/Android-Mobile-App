@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<map>
+    <point>
+        <id>1</id>
+        <name>MarioNode</name>
+        <latitude>41937973</latitude>
+        <longitude>12452660</longitude>
+        <owner>
+            <name>Mario</name>
+            <email>mario@mario.it</email>
+        </owner>
+    </point>
+    <point>
+        <id>300</id>
+        <name>MicheleNode</name>
+        <latitude>41850503</latitude>
+        <longitude>12455750</longitude>
+        <owner>
+            <name>Michele</name>
+            <email>michele@michele.com</email>
+        </owner>
+    </point>
+    <point>
+        <id>10</id>
+        <name>LucaNode</name>
+        <latitude>41933308</latitude>
+        <longitude>12556000</longitude>
+        <owner>
+            <name>Luca</name>
+            <email>luca@luca.org</email>
+        </owner>
+    </point>
+</map>

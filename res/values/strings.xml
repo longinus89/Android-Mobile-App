@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">Hello World, AndroidMapsActivity!</string>
+    <string name="app_name">NodeShotMobile</string>
+    <string name="ApplicationName">NodeShotMobile</string>
+    <string name="app_name2">Menù Principale</string>
+    <string name="title1">Lista dei Nodi</string>
+    <string name="hint1">Cerca un Nodo</string>
+    
+    <string name="dialog0">Opzioni Nodo</string>
+    <string name="dialog1">Info Nodo</string>
+    <string name="dialog2">Info</string>
+    <string name="dialog3">Contatta</string>
+    <string name="dialog4">Modifica</string>
+    <string name="dialog5">Localizza la tua posizione</string>
+    <string name="dialog6">Cerca un nodo per Nome</string>
+    <string name="dialog7">Cerca un nodo per Tipo</string>
+    <string name="dialog8">Cerca un nodo per Coordinate</string>
+    <string name="dialog9">Per Nome</string>
+    <string name="dialog10">Per Coordinate</string>
+    <string name="dialog11">Per Tipo</string>
+    <string name="dialog12">Tu sei qui</string>
+    
+    <string name="menu0">News</string>
+    <string name="menu1">Rileva Posizione</string>
+    <string name="menu2">Cerca Nodi</string>
+    
+    <string name="error0">Tutti i campi sono richiesti</string>
+    <string name="error1">Sorry, this application needs Internet to work properly. Active Internet and try again.</string>
+    
+    <string name="result0">La ricerca non ha prodotto risultati</string>
+    
+    <string name="getGps">Rileva la tua posizione</string>
+    <string name="confirm_gps">Conferma</string>
+    <string name="confirm_search_by_name">Conferma</string>
+    <string name="undo_request">Annulla</string>
+    <string name="latitude_m">Latitudine</string>
+    <string name="longitude_m">Longitudine</string>
+    <string name="precision">Precisione</string>
+    <string name="name">Nome</string>
+    <string name="label_precision">Raggio</string>
+    <string name="label_precision2">0</string>
+    <string name="search">Cerca</string>
+    <string name="search_hint_m">Cerca Posizione</string>
+    <string name="prompt_type_node">Scegli un Nodo</string>
+    
+    <string name="loading">Caricamento…</string>
+    <string name="tab0">Lista Nodi</string>
+    <string name="tab1">Mappa</string>
+    <string name="tab2">AR</string>
+    <string name="tab3">News</string>
+        
+    <string-array name="type_node_values">
+        <item>Tutti</item>
+        <item>Attivi</item>
+        <item>Hotspot</item>
+        <item>Potenziali</item>
+    </string-array>
+    
+    <string-array name="type_node_real_values">
+        <item>a</item>
+        <item>ah</item>
+        <item>h</item>
+        <item>p</item>
+    </string-array>
+    
+    <string-array name="type_node_json_values">
+        <item>active</item>
+        <item>potential</item>
+        <item>hotspot</item>
+    </string-array>
+    
+    <string-array name="type_node_json_model">
+        <item>status</item>
+        <item>id</item>
+        <item>name</item>
+        <item>slug</item>
+        <item>jslug</item>
+        <item>lat</item>
+        <item>lng</item>
+    </string-array>
+    
+    <string-array name="type_news_json_values">
+        <item>tot</item>
+        <item>news</item>
+    </string-array>
+    
+    <string-array name="type_news_json_model">
+        <item>id</item>
+        <item>title</item>
+        <item>content</item>
+    </string-array>
+    
+    
+    <!-- STRINGS FOR GCM -->
+    
+    <string name="already_registered">Sei già registrato.</string>
+    <string name="server_registering">Registrazione su server in corso.</string>
+    <string name="server_registered">Registrazione su server avvenuta.</string>
+    <string name="server_register_error">Errore durante registrazione su server.</string>
+    <string name="server_unregistered">Registrazione del client cancellata dal server.</string>
+    <string name="server_unregister_error">Errore durante cancellazione della registrazione su server.</string>
+    
+    <string name="gcm_registered">Dispositivo registrato su server</string>
+    <string name="gcm_unregistered">Dispositivo cancellato dal server.</string>
+    <string name="gcm_message">Hai ricevuto un messaggio.</string>
+    <string name="gcm_deleted">Ricevuta notifica messaggi cancellati.</string>
+    <string name="gcm_error">Ricevuto errore.</string>
+    <string name="gcm_recoverable_error">Ricevuto errore ripristinabile.</string>
+    
+    <string name="error_config">Errore durante la configurazione.</string>
+    <string name="options_clear">Cancella</string>
+    <string name="options_exit">Esci</string>
+
+    
+    
+    <!-- STRINGS FOR MIXARE PLUGIN -->
+    
+    <string name="search_hint">Search Location</string>
+    <string name="N">N</string>
+    <string name="NE">NE</string>
+    <string name="E">E</string>
+    <string name="SE">SE</string>
+    <string name="S">S</string>
+    <string name="SW">SW</string>
+    <string name="W">W</string>
+    <string name="NW">NW</string>
+    
+    <string name="OSM">Openstreetmap</string>
+    <string name="MIXARE">NodeShotMobile</string>
+    
+    <string name="CIRCLE_MARKER">Circles</string>
+    <string name="NAVIGATION_MARKER">Arrows</string>
+    
+    <string name="empty_list">Sorry, \nThere is no location information \navailable within this radius.\nPlease try to search in a wider range.</string>
+	<string name="option_not_available">Sorry, We are working on it... \nThis option will be available soon!</string>
+	
+	<string name="license">Copyright (C) 2010- Peer internet solutions 
+		\n\nThis program is free software: 	you can redistribute it and/or modify it under the terms of the 
+		GNU General Public License as published by the Free Software Foundation, either version 3 of the License, 
+		or at your option) any later version. 
+		\n\nThis program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even 
+		the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public 
+		License for more details. 
+		\n\n You should have received a copy of the GNU General Public License along with this program. 
+		If not, see &lt;http://www.gnu.org/licenses/&gt;
+	</string>
+	
+	<string name="menu_item_1">Data Source</string>
+	<string name="menu_item_2">List view</string>
+	<string name="menu_item_3">Map view</string>
+	<string name="menu_item_4">Zoom level</string>
+	<string name="menu_item_5">Search</string>
+	<string name="menu_item_6">Info</string>
+	<string name="menu_item_7">License</string>
+	
+	<string name="cancel">Cancel</string>
+	
+	<string name="data_source_edit_err">This data source cannot be edited.</string>
+	<string name="data_source_delete_err">This data source cannot be deleted.</string>
+	
+	<string name="connection_error_dialog">Sorry, a connection Error occured! \nPlease check if you are connected to the Internet.</string>
+	<string name="connection_error_dialog_button1">Retry</string>
+	<string name="connection_error_dialog_button2">Open Settings</string>
+	<string name="connection_error_dialog_button3">Close App</string>
+	
+	<string name="connection_GPS_dialog_text">The GPS location can not be updated... \nIf you continue it could be that the Information 
+		\nwill not be displayed in the right place.</string>
+	<string name="connection_GPS_dialog_button1">Continue</string>
+	<string name="connection_GPS_dialog_button2">Close</string>
+	
+	<string name="no_website_available">Sorry, there is no further \ninformation available.</string>
+	
+	<string name="license_title">License</string>
+	<string name="close_button">Close</string>
+	<string name="general_info_title">General Information</string>
+	
+	<string name="general_info_text">GPS info: </string>
+    <string name="longitude">Longitude: </string>
+	<string name="latitude">Latitude: </string>
+	<string name="altitude">Altitude: </string>
+	<string name="speed">Speed: </string>
+	<string name="accuracy">Accuracy: </string>
+	<string name="gps_last_fix">Last GPS fix: </string>
+	
+	<string name="map_menu_normal_mode">Map</string>
+	<string name="map_menu_satellite_mode">Satellite</string>
+	<string name="map_menu_cam_mode">Camera</string>
+	<string name="map_my_location">My Location</string>
+	
+	<string name="map_current_location_click">Your current location</string>
+	
+	<string name="data_source_add">Add data source</string>
+	<string name="data_source_edit">Edit data source</string>
+	<string name="data_source_delete">Delete data source</string>
+	<string name="data_source_change_wikipedia">Changed to Wikipedia as data source</string>
+	<string name="data_source_change_twitter">Changed to Twitter as data source</string>
+	<string name="data_source_change_osm">Changed to OpenStreetMap as data source</string>
+	
+	<string name="search_failed_notification">No search results</string>
+	<string name="source_openstreetmap">Stations around</string>
+	
+	<string name="search_active_1">Search on data source</string>
+	<string name="search_active_2">. Touch to terminate search</string>
+	<string name="download_error">Error while downloading</string>
+	<string name="download_received">Received data from</string>
+	
+	<string name="add_osm_menu">Add OpenStreetMap URL</string>
+	<string name="insert_osm_url">Insert OpenStreetMap URL</string>
+	<string name="osm_max_object_menu">Set max POI per URL</string>
+	<string name="set_osm_max_object">Maximum POIs per URL</string>
+    
+</resources>
