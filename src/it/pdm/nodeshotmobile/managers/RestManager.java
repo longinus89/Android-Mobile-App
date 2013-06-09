@@ -1,5 +1,6 @@
 package it.pdm.nodeshotmobile.managers;
 
+import it.pdm.nodeshotmobile.SettingsActivity;
 import it.pdm.nodeshotmobile.entities.RestFullValues;
 import it.pdm.nodeshotmobile.entities.RequestMethod;
 import it.pdm.nodeshotmobile.exceptions.AcceptEncodingException;
@@ -12,8 +13,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.zip.GZIPInputStream;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -44,7 +50,7 @@ public class RestManager {
     private int responseCode;
     private String message;
     private Header[] responseH;
-    private String response;
+    private String response ="VUOTO";
 
     public String getResponseMessage() {
         return response;
@@ -134,7 +140,7 @@ public class RestManager {
         return result;
     }
 
-    public void Execute(RequestMethod method) throws UnsupportedEncodingException{
+    public void Execute(RequestMethod method) throws UnsupportedEncodingException, MalformedURLException{
         switch(method) {
             case GET:
             {
@@ -155,16 +161,20 @@ public class RestManager {
                         }
                     }
                 }
+                
 
-                HttpGet request = new HttpGet(url + combinedParams);
+                HttpGet request = new HttpGet(url /*+ combinedParams*/);
 
                 //add headers
                 
-                request.addHeader("Accept", getAccept());                
+                //request.addHeader("Host", SettingsActivity.DEFAULT_VALUE_URL);                
+                request.addHeader("Accept","text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
                 request.addHeader("Accept-Encoding", getAcceptEncoding());
-                request.addHeader("If-Modified-Since", getIfModifiedSince());
+                //request.addHeader("Connection","close");      
+                
+                //request.addHeader("If-Modified-Since", getIfModifiedSince());
 
-                executeRequest(request, url);
+                executeRequest(request);
                 break;
             }
             
@@ -182,14 +192,15 @@ public class RestManager {
                 request.addHeader("Accept-Encoding", getAcceptEncoding());
                 request.addHeader("If-Modified-Since", getIfModifiedSince());
                 
-                executeRequest(request, url);
+                executeRequest(request);
                 break;
             }
         }
     }
-
-    private void executeRequest(HttpUriRequest request, String url)
+    
+    private void executeRequest(HttpUriRequest request) throws UnsupportedEncodingException, MalformedURLException
     {
+    	
         HttpClient client = new DefaultHttpClient();
 
         HttpResponse httpResponse;
@@ -201,18 +212,17 @@ public class RestManager {
         	String headers="";
         	
         	for(Header head : request.getAllHeaders()){
-        		headers+= head.getName()+" : "+head.getValue()+"\n";
+        		headers+= head.getName()+": "+head.getValue()+"\n";
         	}
         	
         	//String params="?";
         	RequestLine params=request.getRequestLine();
         	
-        	Log.v("Request Header",headers);
         	Log.v("Request url",params.toString());
-        	
-            
-        	
+        	Log.v("Request Header",headers);
+        
         	httpResponse = client.execute(request);
+        	        	
             responseCode = httpResponse.getStatusLine().getStatusCode();
             message = httpResponse.getStatusLine().getReasonPhrase();
             
@@ -231,21 +241,20 @@ public class RestManager {
 
         } catch (ClientProtocolException e)  {
             client.getConnectionManager().shutdown();
-            Log.e("",e.toString());
+            Log.e("ClientprotocolException",e.toString());
         } catch (IOException e) {
             client.getConnectionManager().shutdown();
-            Log.e("",e.toString());
-        }
-        catch (Exception e) {
+            Log.e("IOException",e.toString());
+        } catch (IllegalStateException e) {
             client.getConnectionManager().shutdown();
-            Log.e("",e.toString());
-            //Toast mex=Toast.makeText(ActivitygetBaseContext(), text, duration)
+            Log.e("IllegalStateException",e.toString());
         }
     }
 
-    private static String convertStreamToString(InputStream is) {
-
-        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+    private static String convertStreamToString(InputStream iss) throws IOException {
+    	
+    	GZIPInputStream in = new GZIPInputStream(iss);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
         StringBuilder sb = new StringBuilder();
 
         String line = null;
@@ -257,7 +266,7 @@ public class RestManager {
             e.printStackTrace();
         } finally {
             try {
-                is.close();
+            	in.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -266,28 +275,29 @@ public class RestManager {
     }
     
     
-    public String getNodes(boolean status) throws UnsupportedEncodingException, AcceptException, AcceptEncodingException{
-    	accept(RestFullValues.XML);
+    public String getNodes(boolean status) throws ClientProtocolException, URISyntaxException, IOException, AcceptEncodingException{
+    	//accept(RestFullValues.XML);
     	acceptEncoding(RestFullValues.GZIP);
     	if(status){
-    		addParam("group-by-status", RestFullValues.TRUE);
+    		//addParam("group-by-status", RestFullValues.TRUE);
     	}else{
-    		addParam("group-by-status", RestFullValues.FALSE);
+    		//addParam("group-by-status", RestFullValues.FALSE);
     	}
     	//(RestFullValues.);
     	Execute(RequestMethod.GET);
+    	//Log.v("responsemessage", getResponseMessage());
     	return getResponseMessage();
     }
     
-    public String getNews() throws UnsupportedEncodingException, AcceptException, AcceptEncodingException{
-    	acceptEncoding(RestFullValues.GZIP);
+    public String getNews() throws UnsupportedEncodingException, AcceptException, AcceptEncodingException, MalformedURLException{
+    	//acceptEncoding(RestFullValues.GZIP);
     	//(RestFullValues.);
     	Execute(RequestMethod.GET);
     	return getResponseMessage();
     }
     
     
-    public String getNode(String name) throws UnsupportedEncodingException{
+    public String getNode(String name) throws UnsupportedEncodingException, MalformedURLException{
     	addParam("slug", name);
     	Execute(RequestMethod.GET);
     	return getResponseMessage();

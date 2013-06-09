@@ -277,7 +277,28 @@ public class MixContext extends ContextWrapper {
 	    
 		if (urlStr.startsWith("file://")){
 			JsonManager json=new JsonManager(ctx);
-			String input=json.createJson(MapPoint.points);			
+			
+			/* PECIONATA!!!!!! */
+			
+			int i=0;
+			
+			ArrayList<MapPoint> temp = (ArrayList<MapPoint>) MapPoint.points.clone();
+			
+			Log.v("Grandezza mappa da passare a mixare", ""+temp.size());
+			if(temp.size()>800){
+				while(i<1000){
+					try{
+						int rand_val = (int)(Math.random() * temp.size());
+						Log.v("Numero eliminato",""+rand_val);
+						temp.remove(rand_val);
+						i++;
+					}catch (IndexOutOfBoundsException e) {
+						// idle
+					}
+				}
+			}
+			
+			String input=json.createJson(temp);			
 			return new ByteArrayInputStream(input.getBytes("UTF-8"));
 		}
 		if (urlStr.startsWith("content://"))

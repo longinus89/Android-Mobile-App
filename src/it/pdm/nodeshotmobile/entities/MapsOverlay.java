@@ -49,7 +49,7 @@ public class MapsOverlay extends ItemizedOverlay {
 		final int num=index;
 		Resources res=mContext.getResources();
 		final CharSequence[] items=new CharSequence []{res.getString(R.string.dialog2)
-				,res.getString(R.string.dialog3),res.getString(R.string.dialog4)};
+				,/*res.getString(R.string.dialog3),res.getString(R.string.dialog4)*/};
     	AlertDialog.Builder builder=new AlertDialog.Builder(mContext);
     	builder.setTitle(res.getString(R.string.dialog0));
     	builder.setItems(items, new DialogInterface.OnClickListener() {

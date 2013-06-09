@@ -20,31 +20,43 @@ import static com.google.android.gcm.demo.app.CommonUtilities.EXTRA_MESSAGE;
 import static com.google.android.gcm.demo.app.CommonUtilities.SENDER_ID;
 import static com.google.android.gcm.demo.app.CommonUtilities.SERVER_URL;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
 
-import it.pdm.nodeshotmobile.entities.MapPoint;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
+import org.apache.http.client.ClientProtocolException;
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
+import org.xmlpull.v1.XmlPullParserException;
+
 import it.pdm.nodeshotmobile.entities.News;
-import it.pdm.nodeshotmobile.exceptions.DBOpenException;
-import it.pdm.nodeshotmobile.managers.CalendarManager;
-import it.pdm.nodeshotmobile.managers.DbManager;
-import it.pdm.nodeshotmobile.managers.JsonManager;
 import it.pdm.nodeshotmobile.managers.ListManager;
 import it.pdm.nodeshotmobile.managers.RestManager;
+import it.pdm.nodeshotmobile.managers.XmlManager;
 
 import com.google.android.gcm.GCMRegistrar;
 import com.google.android.gcm.demo.app.ServerUtilities;
+import com.msi.androidrss.RSSFeed;
+import com.msi.androidrss.RSSHandler;
 
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -63,18 +75,29 @@ public class NewsActivity extends ListActivity {
     TextView mDisplay;
     AsyncTask<Void, Void, Void> mRegisterTask;
     ListView listNews;
+    Context current;
     ListManager listmng;
     RestManager client;
-    JsonManager jsmng;
+    XmlManager xsmng;
     Integer current_item;
     
     static int ID_SHOW_NEWS = 0;
+    
+    Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+        	ArrayList ob = (ArrayList)msg.obj;
+            trunkList();
+            fillListNodes(ob); //riempie la lista principale con gli id e i nomi dei Nodi esistenti
+
+        }
+    };
     
     static private String TAG = "NewsActivity"; 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        jsmng=new JsonManager(getApplicationContext());
+        xsmng=new XmlManager();
         
         checkNotNull(SERVER_URL, "SERVER_URL");
         checkNotNull(SENDER_ID, "SENDER_ID");
@@ -82,7 +105,10 @@ public class NewsActivity extends ListActivity {
         String[] from={"id","name"}; //dai valori contenuti in queste chiavi
         int[] to={R.id.id_news,R.id.title_news}; //agli id delle view
         setContentView(R.layout.news_layout);
+        
         listNews=getListView();
+        
+        current = this;
         
         listNews.setOnItemClickListener(new OnItemClickListener() {
 
@@ -92,7 +118,7 @@ public class NewsActivity extends ListActivity {
 				String idItem=""+(Integer)listmng.getMap().get(arg2).get("id");
 				current_item=Integer.parseInt(idItem);
 				//Log.v("Current Item in click:", ""+current_item);
-				showDialog(0);
+				showDialog(ID_SHOW_NEWS);
 				
 			}
         	
@@ -149,28 +175,71 @@ public class NewsActivity extends ListActivity {
                 mRegisterTask.execute(null, null, null);
             }
         }
-    }
-    
-    @Override
-    protected void onStart() {
-    
-    	super.onStart();
-        	
-    		//mDisplay.append("Start");
+        
     	
-			//java.util.zip.GZIPOutputStream stream = new GZIPOutputStream(os)
-    	    jsmng.getNews(getResponse()); //parsa il file Json recuperato tramite richiesta GET 
-			//HTTP utilizzando architettura REST, popola quindi la lista di nodi principale
-   	    	fillListNodes(); //riempie la lista principale con gli id e i nomi dei Nodi esistenti
-        	
-        //----------------------------------------------------------------------//
+		//mDisplay.append("Start");
+	AsyncTask< Void, Void, Void> getNewsThread = new AsyncTask<Void, Void, Void>() {
+		
+		private ProgressDialog progressDialog = null;
+		
+        @Override
+        protected Void doInBackground(Void... params) {
+	    try {
+	    	getNews();
+		} catch (IOException e) {
+			Log.e("IOException", e.getMessage());
+		} catch (XmlPullParserException e) {
+			Log.e("XmlPullParserException", e.getMessage());
+		}
+	    
+	    //parsa il file Json recuperato tramite richiesta GET 
+		//HTTP utilizzando architettura REST, popola quindi la lista di nodi principale
+	    	
+	    Message msg = new Message();
+	    msg.obj = xsmng.getParsedData();
+	    mHandler.sendMessage(msg);
+	    	
+	    	return null;
+        }
+
+    	@Override
+        protected void onPreExecute() {
+    		showProgressDialog();
+
+        }
+    	
+    	public void showProgressDialog(){
+            progressDialog = new ProgressDialog(current);
+            progressDialog.setMessage(current.getResources().getString(R.string.loading));
+            progressDialog.setCancelable(false);
+            progressDialog.setIndeterminate(true);
+            progressDialog.show();
+    	}
+    	
+    	public void dismissProgressDialog(){
+    		progressDialog.dismiss();
+    	}
+    	
+    	@Override
+    	protected void onPostExecute(Void result) {
+    		dismissProgressDialog();
+    	}
+    	
+	};
+    //----------------------------------------------------------------------//
 	
-    
+	getNewsThread.execute();
+        
     }
 	
-	private void fillListNodes(){
-		listmng.loadNews(News.news);
+	private void fillListNodes(ArrayList list){
+		
+		listmng.loadNews(list);
 	}
+	private void trunkList(){
+		listmng.deleteAll();
+	}
+	
     
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -234,40 +303,9 @@ public class NewsActivity extends ListActivity {
     };
     
     
-    public String getResponse(){
-		
-		AsyncTask<Void, Void, String> asyncTask = new AsyncTask<Void, Void, String>(){
-
-			@Override
-			protected String doInBackground(Void...voids) {
-		
-		client = new RestManager(NodeShotActivity.STRING_CONNECTION_NEWS);
-
-		try {
-		    String message = client.getNews();
-			String headers = client.getResponseHeaders();
-			return message;
-		} catch (Exception e) {
-		    e.printStackTrace();
-		}
-		return "";
-		}
-	};
-	
-	try {
-		
-			String result=asyncTask.execute().get();
-			return result;
-	
-	}catch (InterruptedException e) {
-		Log.e(TAG, e.toString());
-		return null;
-	} catch (ExecutionException e) {
-		Log.e(TAG, e.toString());
-		return null;
-	}
-	
-	
+    public void getNews() throws ClientProtocolException, IOException, XmlPullParserException{
+		    	
+    	xsmng.parseRSSNews(SettingsActivity.DEFAULT_VALUE_URL_NEWS);
 	}
     
     @Override
@@ -277,15 +315,24 @@ public class NewsActivity extends ListActivity {
     		dialog.setCanceledOnTouchOutside(true);
     		dialog.setContentView(R.layout.show_news);
 		
-    		TextView data=(TextView) dialog.findViewById(R.id.show_news);
+    		TextView date=(TextView) dialog.findViewById(R.id.date);
+    		
+    		TextView body=(TextView) dialog.findViewById(R.id.body);
+
+    	    TextView link = (TextView) dialog.findViewById(R.id.link);
+    	    link.setMovementMethod(LinkMovementMethod.getInstance());
+    	    
+    	    
 	 	
-    		ArrayList<News> messages = (ArrayList<News>)News.news.clone();
+    		ArrayList<News> messages = (ArrayList<News>)xsmng.getParsedData();
     		
     		for(News n : messages){
     			if(n.getId()==current_item){
-    	    		dialog.setTitle(n.getName());
-            		String body=n.getContent()+"\n";
-					data.setText(body);
+    	    		dialog.setTitle(n.getTitle());
+            		
+    	    		date.setText(n.getDate());
+    	    		body.setText(Html.fromHtml(n.getContent()));
+					link.setText(n.getLink());
     			}
      			
     		}
@@ -303,6 +350,8 @@ public class NewsActivity extends ListActivity {
     	}
 
     }
+	
+	
     
     
     

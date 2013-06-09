@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:minWidth="190dp" 
+    android:minHeight="140dp">
+
+    <TextView
+        android:id="@+id/show_node"
+        android:layout_width="130dp"
+        android:layout_marginLeft="10dp"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:minWidth="190dp" >
+
+        <EditText
+            android:id="@+id/namesurname"
+            android:layout_height="wrap_content"
+            android:hint="@string/mail0"
+            android:ems="10"
+            android:layout_gravity="center"
+            android:layout_width="220dp"/>   
+         <EditText
+            android:id="@+id/body"
+            android:hint="@string/mail1"
+            android:ems="10"
+            android:layout_gravity="center"
+            android:layout_width="220dp"
+            android:layout_height="220dp"/>
+        
+         <Button
+             android:id="@+id/send"
+             android:layout_width="180dp"
+             android:layout_gravity="center"
+             android:layout_height="wrap_content"
+             android:hint="@string/mail2" />
+
+    </LinearLayout>
+
+</LinearLayout>

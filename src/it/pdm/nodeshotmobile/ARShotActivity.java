@@ -47,6 +47,10 @@ import org.mixare.data.DataSourceList;
 import org.mixare.gui.PaintScreen;
 import org.mixare.render.Matrix;
 
+import com.google.android.maps.GeoPoint;
+import com.google.android.maps.MapController;
+import com.google.android.maps.OverlayItem;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.SearchManager;
@@ -64,6 +68,8 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
@@ -212,14 +218,83 @@ public class ARShotActivity extends Activity implements SensorEventListener, OnT
 		AlertDialog alert = builder.create();
 		alert.show();
 	}
+	
+	private void buildAlertMessageNoGps() {
+		
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(this.getResources().getString(R.string.activeGps))
+               .setCancelable(false)
+               .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                   public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                       startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                   }
+               })
+               .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                   public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                	   
+               		Intent intent = new Intent().setClass(ARShotActivity.this, NodeShotActivity.class);
+					startActivity(intent);
+                	finish();
+                   }
+               });
+        final AlertDialog alert = builder.create();
+        alert.show();
+    }
+	
+	public void getPosition(){
+		/* Use the LocationManager class to obtain GPS locations */
 
+		// Acquire a reference to the system Location Manager
+		LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+    	
+	    if(!locationManager.isProviderEnabled( LocationManager.GPS_PROVIDER ) ) {
+	    	//showToastLong(cntx.getResources().getString(R.string.unableGps));
+	    	buildAlertMessageNoGps();
+	    	return;
+	    }else{
+	    	// Define a listener that responds to location updates
+			LocationListener locationListener = new LocationListener() {
+			    public void onLocationChanged(Location location) {
+			    	
+			    }
+
+			    public void onStatusChanged(String provider, int status, Bundle extras) {
+			    	
+			    	
+			    	
+			    }
+
+			    public void onProviderEnabled(String provider) {}
+
+			    public void onProviderDisabled(String provider) {}
+			  };
+
+			// Register the listener with the Location Manager to receive location updates
+			locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+			
+	    }
+	    
+		
+		
+	}
+	
+	@Override
+	protected void onRestart() {
+		// TODO Auto-generated method stub
+		super.onRestart();
+		
+		getPosition();
+	}
+	
+	
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		try {
 
-
+			getPosition();
 
 			handleIntent(getIntent());
 
@@ -371,6 +446,8 @@ public class ARShotActivity extends Activity implements SensorEventListener, OnT
 	@Override
 	protected void onResume() {
 		super.onResume();
+		
+		getPosition();
 
 		try {
 			this.mWakeLock.acquire();

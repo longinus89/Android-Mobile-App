@@ -467,7 +467,7 @@ class ListItemAdapter extends BaseAdapter {
 		holder.datasource_icon.setImageResource(mixListView.getDataSourceIcon().get(position));
 		holder.checkbox.setChecked(mixListView.getDataSourceChecked().get(position));
 
-		holder.checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+	holder.checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView,

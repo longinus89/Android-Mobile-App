@@ -84,6 +84,18 @@ public class ListManager {
     	   Collections.sort(obj,comparator);
     }
     
+    public void sortByNameReverse(ArrayList<HashMap<String, Object>> obj){
+    	Comparator<HashMap<String, Object>> comparator = new Comparator<HashMap<String, Object>>() {
+
+			@Override
+			public int compare(HashMap<String, Object> obj1,
+					HashMap<String, Object> obj2) {
+   	         return ((String)obj2.get("name")).compareToIgnoreCase((String)obj1.get("name"));
+			}
+    	   };
+    	   Collections.sort(obj,comparator);
+    }
+    
     public void sortById(ArrayList<HashMap<String, Object>> obj){
     	Comparator<HashMap<String, Object>> comparator = new Comparator<HashMap<String, Object>>() {
 
@@ -131,12 +143,15 @@ public class ListManager {
     }
     
     public void filter(String s){
-    	
+
+    	sortByNameReverse(items);
     	Iterator<HashMap<String, Object>> handle=items.iterator();
     	items_result.clear();
     	do{
     		
     		HashMap<String, Object> item=handle.next();
+    		
+    		
     		String name=(String)item.get("name");
     		
     		boolean match=Pattern.compile(Pattern.quote(s), Pattern.CASE_INSENSITIVE).matcher(name).find();
@@ -155,6 +170,13 @@ public class ListManager {
     public void delete(Integer id){
     	
     	items.remove(id.intValue());
+    	
+    	refresh();
+    	
+    }
+    
+    public void deleteAll(){
+    	items.clear();
     	
     	refresh();
     	

@@ -1,8 +1,10 @@
 package it.pdm.nodeshotmobile.managers;
 
 import it.pdm.nodeshotmobile.R;
+import it.pdm.nodeshotmobile.entities.Group;
 import it.pdm.nodeshotmobile.entities.MapPoint;
 import it.pdm.nodeshotmobile.entities.News;
+import it.pdm.nodeshotmobile.exceptions.DBOpenException;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -11,6 +13,7 @@ import java.util.Comparator;
 import java.util.Currency;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -24,11 +27,14 @@ public class JsonManager {
 	private JSONObject jObject;
 	private FileManager fmng;
 	private ArrayList<MapPoint> parsedDataMapPoints;
+	private ArrayList<Group> parsedDataMapGroups;
 	private ArrayList<News> parsedDataNews;
 	private Context current;
+	private ArrayList<String> optvalues;
 	
 	public JsonManager(Context current) {
 		parsedDataMapPoints=new ArrayList<MapPoint>();
+		parsedDataMapGroups=new ArrayList<Group>();
 		parsedDataNews=new ArrayList<News>();
 		fmng=new FileManager();
 		this.current=current;
@@ -54,8 +60,16 @@ public class JsonManager {
         return parsedDataMapPoints;
 	}
 	
+	public ArrayList<Group> getParsedDataGroups() {  //metodo di accesso alla struttura dati
+        return parsedDataMapGroups;
+	}
+	
 	public ArrayList<News> getParsedDataNews() {  //metodo di accesso alla struttura dati
         return parsedDataNews;
+	}
+	
+	public void clearParsedDataMapPoints() { 
+        parsedDataMapPoints.clear();
 	}
 	
 	/**
@@ -63,26 +77,13 @@ public class JsonManager {
      * @param	jString string who contains a JSON Document
      */
 	public void parseJsonNodes(String jString){
-			JSONObject mapObject;
+		
+			JSONArray mapObject;
+		
 			try {
-				
-				String[] values= current.getResources().getStringArray(R.array.type_node_json_values);
-				
-				jObject = new JSONObject(jString);	
-				mapObject = jObject.getJSONObject(values[0]);
+				optvalues = visitTreeJson(jString);
+				mapObject = jObject.getJSONArray("objects");
 				parseTreeJsonNodes(mapObject);
-				
-				jObject = new JSONObject(jString);
-				mapObject = jObject.getJSONObject(values[1]);
-				parseTreeJsonNodes(mapObject);
-				
-				jObject = new JSONObject(jString);
-				mapObject = jObject.getJSONObject(values[2]);
-				parseTreeJsonNodes(mapObject);
-				
-				
-			
-				
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				eDebug(e.toString());
@@ -90,53 +91,132 @@ public class JsonManager {
 		
 	}
 	
-	public void parseTreeJsonNodes(JSONObject obj){
+	/**
+     * This method obtains all nodes from json file using json parsing JSON Parser. 
+     * @param	jString string who contains a JSON Document
+	 * @throws JSONException 
+     */
+	public void parseJsonGroups(String jString) throws JSONException{
+		
+		
+			jObject = new JSONObject(jString);	
+			JSONArray mapObject;
+			
+			try {
+				//Log.v("root", jObject.toString(2));
+				mapObject = jObject.getJSONArray("objects");
+				parseTreeJsonGroups(mapObject);
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				eDebug(e.toString());
+			}
+		
+	}
+	
+	public ArrayList<String> visitTreeJson(String jString) throws JSONException{
+		
+		jObject = new JSONObject(jString);	
+		JSONArray jobj = jObject.getJSONArray("objects");
+		JSONObject jpoi = jobj.getJSONObject(0);
+		
 		//recupero tutti i nomi dei campi(a loro volta sono JSONObject oppure JSONArray) dell'oggetto 
 		//radice dell'albero
-	    Iterator<String> myIter = obj.keys();
-	    List<String> names = new ArrayList<String>();
-
-	    while(myIter.hasNext()){
-	        names.add(myIter.next());
+		Iterator<String> labels = jpoi.keys();
+	    ArrayList<String> names = new ArrayList<String>();
+	    for(int i=0;i<jpoi.length();i++){		    
+		    names.add((String)labels.next());
 	    }
 	    
-	    for(int i=0;i<names.size();i++){
-	    	JSONObject entryObject = obj.optJSONObject(names.get(i));
-	    	MapPoint point=new MapPoint();
+	    String[] values= current.getResources().getStringArray(R.array.type_node_json_model);
+	    
+	    for(int i=0;i<values.length;i++){		    
+		    names.remove(values[i]);
+	    }
+	    
+	    return names;
+		
+		
+	}
+	
+	public void parseTreeJsonGroups(JSONArray obj) throws JSONException{
+		//recupero tutti i nomi dei campi(a loro volta sono JSONObject oppure JSONArray) dell'oggetto 
+		//radice dell'albero
+		
+		Log.v("Grandezza lista gruppi", ""+obj.length());
+		
+	    for (int i = 0; i < obj.length(); ++i) {
+	        JSONObject poi = obj.getJSONObject(i);
+	        Group gr = new Group();
+	        
+	        String[] values= current.getResources().getStringArray(R.array.type_group_json_model);
+    		
 	    	
-	    	try{
-	    		
-	    		String[] values= current.getResources().getStringArray(R.array.type_node_json_model);
-	    		
-	    		String status=entryObject.getString(values[0]);
-	    	   	point.setStatus(status);
-	    	
-	    	   	int id=entryObject.getInt(values[1]);
-	    	   	point.setId(id);
-	    	
-	    	   	String name=entryObject.getString(values[2]);
-	    	   	point.setName(name);
-	    	
-	    	   	String slug=entryObject.getString(values[3]);
-	    	   	point.setSlug(slug); 
-	    	
-	    	   	String jslug=entryObject.getString(values[4]);
-	    	   	point.setJslug(jslug); 
-	    	
-	    	   	double lat=entryObject.getDouble(values[5]);
-	    	   	point.setLatitude((int)(lat*1000000));
-	    	
-	    	   	double lng=entryObject.getDouble(values[6]);
-	    	   	point.setLongitude((int)(lng*1000000));
-	    	
-	    	   	parsedDataMapPoints.add(point);
-	    	
-	    	}catch(NullPointerException e){} catch (JSONException e) {
-				Log.e("JsonManager", e.toString());
-			}
-	    	}
+    		try{
+    		String url=poi.getString(values[1]);
+    	   	gr.setUri(url);
+    	   	
+	        //String organization=poi.getString(values[0]);
+	        String name=poi.getString(values[2]);
+    		gr.setName(name);
+    		
+    	   	parsedDataMapGroups.add(gr);
+    		}catch(JSONException e){
+    			//non fa nulla
+    		}
+    	   	
+	    }
+	    //Log.v("Grandezza lista gruppi DOPO", ""+parsedDataMapGroups.size());
+	    //Log.v("list of groups", parsedDataMapGroups.toString());
 
 	}
+	
+	public void parseTreeJsonNodes(JSONArray obj) throws JSONException{
+		//recupero tutti i nomi dei campi(a loro volta sono JSONObject oppure JSONArray) dell'oggetto 
+		//radice dell'albero
+	    
+	    for (int i = 0; i < obj.length(); ++i) {
+	        JSONObject poi = obj.getJSONObject(i);
+	        MapPoint point = new MapPoint();
+	        
+	        String[] values= current.getResources().getStringArray(R.array.type_node_json_model);
+    		
+    		String status=poi.getString(values[0]);
+    	   	
+    		//Log.v("Status", status);
+    		
+    		if(status.equals("0")){
+    			continue;
+    		}
+    		
+    		point.setType(status);
+    	
+    	   	String name=poi.getString(values[1]);
+    	   	point.setName(name);
+    	
+    	   	double lat=poi.getDouble(values[2]);
+    	   	point.setLatitude((int)(lat*1000000));
+    	
+    	   	double lng=poi.getDouble(values[3]);
+    	   	point.setLongitude((int)(lng*1000000));
+    	   	
+    	   	try{
+    	   		double alt=poi.getDouble(values[4]);
+    	   	   	point.setAltitude((int)(alt));
+    	   	}catch(JSONException e){
+    	   	   	point.setAltitude(60);
+    	   	}
+    	   	for(int j=0;j<optvalues.size();j++){
+    	   		String label = optvalues.get(j);
+    	   		point.addOptValue(label, poi.getString(label));
+    	   	}
+    	
+    	   	parsedDataMapPoints.add(point);
+    	   	
+	    }
+
+	}
+	
+
 	
 	
 	/**
@@ -157,7 +237,7 @@ public class JsonManager {
 			num=jObject.getInt(values0[0]);
 			mapObject = jObject.getJSONArray(values0[1]);
 			
-			for (int i = 0; i < num; ++i) {
+			for (int i = num; i >= 0; i--) {
 			    JSONObject rec = mapObject.getJSONObject(i);
 			    News mess=new News();
 			    
@@ -166,7 +246,7 @@ public class JsonManager {
 			    String content = rec.getString(values1[2]);
 			
 			    mess.setId(id);
-			    mess.setName(title);
+			    mess.setTitle(title);
 			    mess.setContent(content);
 			    
 			    parsedDataNews.add(mess);
@@ -183,7 +263,7 @@ public class JsonManager {
 	
 	//created mainly for mixare plugin
 	/**
-     * This method is used to creare a JSON Document that will be used by Mixare plug-in (AUgmented Reality).
+     * This method is used to creare a JSON Document that will be used by Mixare plug-in (Augmented Reality).
      * @param		map an ArrayList that contains MapPoint nodes
      * @return		a result String
      */
@@ -216,11 +296,11 @@ public class JsonManager {
 		
 		String result=builder.toString();
 		
-		try {
-			fmng.writeFile("/sdcard/download/nma_mixare.json", result);
+		/*try {
+			//fmng.writeFile("/sdcard/download/nma_mixare.json", result);
 		} catch (FileNotFoundException e) {
 			eDebug(e.toString());
-		}
+		}*/
 		
 		
 		
@@ -234,10 +314,27 @@ public class JsonManager {
      * @param		json_list a String that contains a JSON well-formatted Document
      */
 	public void getNodes(String json_list){
-	       parseJsonNodes(json_list);//usiamo il parser per scandire il contenuto fornito
+    	   clearParsedDataMapPoints();
+		   parseJsonNodes(json_list);//usiamo il parser per scandire il contenuto fornito
 	       MapPoint.points=getParsedDataMapPoints(); //preleva la lista dei nodi parsati e popola quella della activity.
 	}
 	
+	/**
+     * this method is used to fill an ArrayList of Groups used by the main activity, with the groups parsed from the given
+     * JSON Document.
+     * @param		json_list a String that contains a JSON well-formatted Document
+	 * @throws JSONException 
+     */
+	public void getGroups(String json_list) throws JSONException{
+	       parseJsonGroups(json_list);//usiamo il parser per scandire il contenuto fornito
+	       Group.groups=getParsedDataGroups(); //preleva la lista dei nodi parsati e popola quella della activity.
+	}
+	
+	/**
+     * this method is used to fill an ArrayList of News used by the main activity, with the news parsed from the given
+     * JSON Document.
+     * @param		json_list a String that contains a JSON well-formatted Document
+     */
 	public void getNews(String json_list){
 	       parseJsonNews(json_list);//usiamo il parser per scandire il contenuto fornito
 	       News.news=getParsedDataNews(); //preleva la lista dei nodi parsati e popola quella della activity.

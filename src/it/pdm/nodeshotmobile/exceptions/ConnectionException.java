@@ -6,7 +6,7 @@ private static final long serialVersionUID = 20L;
 	
 	private String message;
 	
-	public ConnectionException() {
+public ConnectionException() {
 		message="Sorry, this application needs Internet to work properly. Active Internet and try again.";
 	}
 	

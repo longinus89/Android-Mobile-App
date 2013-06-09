@@ -21,10 +21,12 @@
     <string name="dialog10">Per Coordinate</string>
     <string name="dialog11">Per Tipo</string>
     <string name="dialog12">Tu sei qui</string>
+    <string name="dialog13">Invia un email al responsabile</string>
     
     <string name="menu0">News</string>
     <string name="menu1">Rileva Posizione</string>
     <string name="menu2">Cerca Nodi</string>
+    <string name="menu3">Settings</string>
     
     <string name="error0">Tutti i campi sono richiesti</string>
     <string name="error1">Sorry, this application needs Internet to work properly. Active Internet and try again.</string>
@@ -32,6 +34,8 @@
     <string name="result0">La ricerca non ha prodotto risultati</string>
     
     <string name="getGps">Rileva la tua posizione</string>
+    <string name="unableGps">Funzionalità non disponibile. Attivare GPS e riprovare.</string>
+    <string name="activeGps">Il tuo GPS sembra disattivato. Vuoi attivarlo?</string>
     <string name="confirm_gps">Conferma</string>
     <string name="confirm_search_by_name">Conferma</string>
     <string name="undo_request">Annulla</string>
@@ -45,12 +49,25 @@
     <string name="search_hint_m">Cerca Posizione</string>
     <string name="prompt_type_node">Scegli un Nodo</string>
     
+    <string name="urlGroupFieldSettings">Inserire URL</string>
+    <string name="nameGroupFieldSettings">Inserire Nome Gruppo</string>
+	<string name="modifyGroupButtonSettings">Modifica</string>
+	<string name="addGroupButtonSettings">Aggiungi</string>
+	<string name="confirmGroupButtonSettings">Conferma</string>
+	<string name="titleSettings">Preferenze</string>
+	<string name="title2Settings">Seleziona Gruppo</string>
+	<string name="title3Settings">Nuovo gruppo</string>
+    
     <string name="loading">Caricamento…</string>
     <string name="tab0">Lista Nodi</string>
     <string name="tab1">Mappa</string>
     <string name="tab2">AR</string>
     <string name="tab3">News</string>
-        
+    
+    <string name="mail0">Il tuo nome e cognome</string>
+    <string name="mail1">Contenuto Messaggio</string>
+    <string name="mail2">Invia</string>
+    
     <string-array name="type_node_values">
         <item>Tutti</item>
         <item>Attivi</item>
@@ -73,12 +90,34 @@
     
     <string-array name="type_node_json_model">
         <item>status</item>
-        <item>id</item>
         <item>name</item>
-        <item>slug</item>
-        <item>jslug</item>
         <item>lat</item>
         <item>lng</item>
+        <item>elev</item>
+    </string-array>
+    
+    <string-array name="type_group_json_model">
+        <item>organization</item>
+        <item>nodes</item>
+        <item>name</item>
+    </string-array>
+    
+    <string-array name="group_white_list">
+        <item>Ninux.org</item>
+    </string-array>
+    
+    <string-array name="source_images_group_ninux">
+        <item>R.drawable.marker_potential</item>
+        <item>R.drawable.marker_active</item>
+    </string-array>
+    
+        
+    <string-array name="source_labels_group_ninux">
+        <item>Potential</item>
+        <item>Planned</item>
+        <item>Testing</item>
+        <item>Active</item>
+        <item>Mantainance</item>
     </string-array>
     
     <string-array name="type_news_json_values">
